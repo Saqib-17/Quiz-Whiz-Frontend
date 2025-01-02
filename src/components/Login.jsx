@@ -8,7 +8,7 @@ const SuccessModal = ({ closeModal }) => (
     <div className="bg-white p-6 rounded-lg w-80 shadow-lg">
       <h2 className="text-xl font-semibold text-gray-800 text-center mb-4">🎉 Login Successful!</h2>
       <p className="text-gray-600 text-center mb-6">
-        Welcome back! You are being redirected to the group selection page.
+        You can now proceed to next page.
       </p>
       <div className="flex justify-center">
         <button
