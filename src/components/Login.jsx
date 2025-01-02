@@ -8,14 +8,14 @@ const SuccessModal = ({ closeModal }) => (
     <div className="bg-white p-6 rounded-lg w-80 shadow-lg">
       <h2 className="text-xl font-semibold text-gray-800 text-center mb-4">🎉 Login Successful!</h2>
       <p className="text-gray-600 text-center mb-6">
-        Welcome back! You are being redirected to the home page.
+        Welcome back! You are being redirected to the group selection page.
       </p>
       <div className="flex justify-center">
         <button
           onClick={closeModal}
           className="px-6 py-2 bg-primary-color text-white rounded-md hover:bg-light-pink transition"
         >
-          Start Exploring
+          Proceed
         </button>
       </div>
     </div>
@@ -33,7 +33,7 @@ export default function Login() {
   const openModal = () => setModalVisible(true);
   const closeModal = () => {
     setModalVisible(false);
-    navigate("/"); // Redirect immediately after closing the modal
+    navigate("/group"); // Redirect to Group page after successful login
   };
 
   const handleLogin = async (event) => {
@@ -43,7 +43,7 @@ export default function Login() {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      openModal();
+      openModal(); // Show the success modal
     } catch (err) {
       console.error("Login error:", err);
       setError("Invalid email or password. Please try again.");
