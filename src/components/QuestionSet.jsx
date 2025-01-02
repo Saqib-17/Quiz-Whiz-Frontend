@@ -19,7 +19,7 @@ export default function QuestionSet() {
           return;
         }
 
-        const response = await fetch(`http://localhost:4000/api/questions/${subject}`);
+        const response = await fetch(`https://quiz-whiz-backend.vercel.app/api/questions/${subject}`);
         if (!response.ok) {
           throw new Error(`Failed to fetch questions: ${response.statusText}`);
         }
