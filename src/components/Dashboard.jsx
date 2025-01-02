@@ -38,6 +38,24 @@ const QuizWhiz = () => {
     fetchAttempts();
   }, [location.state]);
 
+  const getFeedback = () => {
+    const totalAnswers = correctAnswers + wrongAnswers;
+    const percentage = (correctAnswers / totalAnswers) * 100;
+
+    if (percentage <= 30) {
+      return "Don't lose hope! Start with the basics and keep practicing—progress takes time.";
+    } else if (percentage <= 60) {
+      return "Good job! You're improving steadily. Keep practicing to sharpen your skills.";
+    } else if (percentage <= 80) {
+      return "Great work! You're performing well. A little extra effort will make you excel!";
+    } else {
+      return "Amazing performance! You're excelling—keep pushing boundaries for greater success!";
+    }
+    
+    
+    
+  };
+
   return (
     <div className="bg-yellow-50 min-h-screen flex flex-col playwrite">
       {/* Header Section */}
@@ -95,15 +113,13 @@ const QuizWhiz = () => {
                   {attempts}
                 </p>
               </div>
-              <div className="bg-[#d4e5dc] rounded-lg shadow-md p-6 lg:py-20">
+              <div className="bg-[#d4e5dc] rounded-lg shadow-md p-6 lg:py-20 ">
                 <h2 className="text-lg font-bold text-center">Feedback</h2>
-                <p className="mt-4 italic text-center">
-                  "Push your limits – success follows hard work!"
-                </p>
+                <p className="mt-4  text-center">{getFeedback()}</p>
               </div>
             </div>
           </div>
-          <div className="absolute bottom-4 right-4 hidden md:block">
+          <div className="absolute bottom-4 right-4 hidden md:block ">
             <img
               src={Feedbacksvg}
               alt="Student Illustration"

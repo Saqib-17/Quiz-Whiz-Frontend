@@ -60,7 +60,14 @@ export default function QuestionSet() {
     navigate("/dashboard", { state: { answers } });
   };
 
-  if (loading) return <div>Loading questions...</div>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="loader border-t-4 border-blue-500 rounded-full w-16 h-16 animate-spin"></div>
+      </div>
+    );
+  }
+  
   if (error) return <div className="text-red-600">{error}</div>;
 
   return (
