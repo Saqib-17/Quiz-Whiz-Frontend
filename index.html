@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizWhiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playwrite+US+Modern:wght@100..400&display=swap" rel="stylesheet">
+    <style>
+        .playwrite {
+            font-family: "Playwrite US Modern", cursive;
+        }
+        .animate-fade-in {
+            animation: fadeIn 2s ease-in-out forwards;
+        }
+        .glow-effect:hover {
+            box-shadow: 0 0 15px rgba(196, 91, 82, 0.7);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-color': '#d36831',
+                        'secondary-color': '#f6eec3',
+                        'brown': '#8c7a5b',
+                        'pink': '#c45b52',
+                        'light-pink': '#d36831',
+                        'maroon': '#551317',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+  <body class="playwrite">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
