@@ -49,7 +49,7 @@ export default function SignupForm() {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      const response = await fetch("http://localhost:4000/api/users", {
+      const response = await fetch("https://quiz-whiz-backend.vercel.app/api/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -164,9 +164,7 @@ export default function SignupForm() {
             </div>
           </form>
 
-          <p className="mt-4 text-center text-gray-600 text-sm">
-            Already have an account? <a href="/login" className="text-primary-color hover:underline">Log in</a>
-          </p>
+          
         </div>
       </div>
 
