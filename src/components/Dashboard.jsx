@@ -4,27 +4,33 @@ import SidebarHeader from './SidebarHeader';
 import Feedbacksvg from '../assets/Feedback.svg';
 
 const QuizWhiz = () => {
-  const location = useLocation(); // Get the passed state from QuestionSet page
-  const navigate = useNavigate(); // For navigating to other pages
+  const location = useLocation();
+  const navigate = useNavigate();
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [wrongAnswers, setWrongAnswers] = useState(0);
-  const [attempts, setAttempts] = useState(0); // Track attempts
+  const [attempts, setAttempts] = useState(0);
+  const [incorrectQuestions, setIncorrectQuestions] = useState([]);
 
-  const userId = "example-user-id"; // Replace with dynamic user ID logic
+  const userId = "example-user-id";
 
   useEffect(() => {
     if (location.state && location.state.answers) {
       const { answers } = location.state;
 
-      // Calculate correct and wrong answers
       const correct = answers.filter(answer => answer.isCorrect).length;
       const wrong = answers.length - correct;
 
       setCorrectAnswers(correct);
       setWrongAnswers(wrong);
+
+      // Extract incorrect question numbers
+      const incorrect = answers
+        .map((answer, index) => (!answer.isCorrect ? index + 1 : null))
+        .filter(q => q !== null);
+
+      setIncorrectQuestions(incorrect);
     }
 
-    // Fetch attempts from backend
     const fetchAttempts = async () => {
       try {
         const response = await fetch(`http://localhost:4000/api/getAttempts/${userId}`);
@@ -51,17 +57,12 @@ const QuizWhiz = () => {
     } else {
       return "Amazing performance! You're excelling—keep pushing boundaries for greater success!";
     }
-    
-    
-    
   };
 
   return (
     <div className="bg-yellow-50 min-h-screen flex flex-col playwrite">
-      {/* Header Section */}
       <SidebarHeader />
 
-      {/* Main Content */}
       <main className="flex-grow p-6 md:p-12 mx-4 lg:mx-60">
         <section>
           <div className="flex-1 flex flex-col space-y-8 p-6 lg:pl-12">
@@ -99,27 +100,29 @@ const QuizWhiz = () => {
 
             {/* Additional Information Section */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 rounded-lg shadow-md">
-              <div className="bg-[#d4e5dc] rounded-lg shadow-md p-6 text-center">
-                <h2 className="text-lg font-bold">Your Growth</h2>
-                <img
-                  className="w-[180px] mx-auto"
-                  src="#"
-                  alt="Coming soon"
-                />
+              {/* Feedback Card */}
+              <div className="bg-[#d4e5dc] rounded-lg shadow-md p-6 text-center order-1">
+                <h2 className="text-lg font-bold">Feedback</h2>
+                <p className="mt-4">{getFeedback()}</p>
               </div>
-              <div className="bg-[#d4e5dc] rounded-lg shadow-md p-6 text-center">
-                <h2 className="text-lg font-bold">Number of Attempts</h2>
-                <p className="text-2xl lg:text-4xl font-bold mt-4 pt-4 lg:pt-10">
-                  {attempts}
-                </p>
-              </div>
-              <div className="bg-[#d4e5dc] rounded-lg shadow-md p-6 lg:py-20 ">
-                <h2 className="text-lg font-bold text-center">Feedback</h2>
-                <p className="mt-4  text-center">{getFeedback()}</p>
+
+              {/* Merged Card */}
+              <div className="col-span-2 bg-[#d4e5dc] rounded-lg shadow-md p-6 text-center order-2">
+                <h2 className="text-lg font-bold">Question Analysis</h2>
+                <p className="mt-4">You answered the following questions incorrectly:</p>
+                <ul className="list-disc list-inside mt-4 text-left">
+                  {incorrectQuestions.length > 0 ? (
+                    incorrectQuestions.map((q, index) => (
+                      <li key={index}>Question {q}</li>
+                    ))
+                  ) : (
+                    <li>No incorrect questions! Great job!</li>
+                  )}
+                </ul>
               </div>
             </div>
           </div>
-          <div className="absolute bottom-4 right-4 hidden md:block ">
+          <div className="absolute bottom-4 right-4 hidden md:block">
             <img
               src={Feedbacksvg}
               alt="Student Illustration"
