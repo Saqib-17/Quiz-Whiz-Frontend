@@ -1,7 +1,24 @@
 import { Link } from 'react-router-dom';
-import Profile from './Profile'; 
+import { auth } from '../firebase/firebase';
+import { useState, useEffect } from 'react';
 
 export default function Header() {
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setLoggedIn(true);
+        setUserName(user.displayName || user.email?.split('@')[0] || "User");
+      } else {
+        setLoggedIn(false);
+        setUserName("");
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
   return (
     <header className="lg:px-40 px-2 py-2 bg-secondary-color shadow-md sticky top-0 z-10">
       <nav>
@@ -14,6 +31,7 @@ export default function Header() {
               QuizWhiz
             </Link>
           </div>
+
           <div className="hidden lg:flex">
             <ul className="flex space-x-4">
               <li>
@@ -37,28 +55,29 @@ export default function Header() {
                   </a>
                 </button>
               </li>
-              {/* ✅ Added Profile link */}
-              <li>
-                <button>
-                  <Link
-                    to="/profile"
-                    className="text-primary-color lg:text-lg hover:text-pink transition-colors duration-300"
-                  >
-                    Profile
-                  </Link>
-                </button>
-              </li>
             </ul>
           </div>
+
           <div>
-            <button>
-              <Link
-                to="/SignupForm"
-                className="lg:text-lg bg-primary-color font-medium rounded-full px-8 py-2 text-white hover:bg-pink transition-transform transform hover:scale-105"
-              >
-                Try for Free
-              </Link>
-            </button>
+            {!loggedIn ? (
+              <button>
+                <Link
+                  to="/SignupForm"
+                  className="lg:text-lg bg-primary-color font-medium rounded-full px-8 py-2 text-white hover:bg-pink transition-transform transform hover:scale-105"
+                >
+                  Try for Free
+                </Link>
+              </button>
+            ) : (
+              <button>
+                <Link
+                  to="/profile"
+                  className="lg:text-lg bg-primary-color font-medium rounded-full px-8 py-2 text-white hover:bg-pink transition-transform transform hover:scale-105"
+                >
+                  Profile
+                </Link>
+              </button>
+            )}
           </div>
         </div>
       </nav>

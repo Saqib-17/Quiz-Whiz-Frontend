@@ -3,6 +3,7 @@ import singupdp from '../assets/form-dp.svg';
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase/firebase.js";
 import { getFirebaseErrorMessage } from "../firebase/firebaseErrors.js";
+import { Link, useNavigate } from "react-router-dom";
 
 const SuccessModal = ({ closeModal }) => (
   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -29,12 +30,16 @@ export default function SignupForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [userClass, setUserClass] = useState("");
+  const [userClass, setUserClass] = useState("9"); // default class
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const openModal = () => setModalVisible(true);
-  const closeModal = () => setModalVisible(false);
+  const closeModal = () => {
+    setModalVisible(false);
+    navigate("/group");
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -44,7 +49,6 @@ export default function SignupForm() {
     }
 
     setLoading(true);
-
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
@@ -66,8 +70,6 @@ export default function SignupForm() {
         throw new Error("Failed to create user on the backend.");
       }
 
-      const data = await response.json();
-      console.log("Backend response:", data);
       openModal();
     } catch (error) {
       console.error("Error during signup:", error);
@@ -78,6 +80,13 @@ export default function SignupForm() {
       setLoading(false);
     }
   };
+
+  // Dynamic class options 9 and 10
+  const classOptions = [9, 10].map((cls) => (
+    <option key={cls} value={cls}>
+      Class {cls}
+    </option>
+  ));
 
   return (
     <div className="bg-secondary-color flex items-center justify-center min-h-screen playwrite">
@@ -113,6 +122,7 @@ export default function SignupForm() {
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-color focus:border-primary-color sm:text-sm"
               />
             </div>
+
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email Address</label>
               <input
@@ -123,6 +133,7 @@ export default function SignupForm() {
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-color focus:border-primary-color sm:text-sm"
               />
             </div>
+
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
               <input
@@ -133,6 +144,7 @@ export default function SignupForm() {
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-color focus:border-primary-color sm:text-sm"
               />
             </div>
+
             <div>
               <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700">Confirm Password</label>
               <input
@@ -143,16 +155,19 @@ export default function SignupForm() {
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-color focus:border-primary-color sm:text-sm"
               />
             </div>
+
             <div>
-              <label htmlFor="class" className="block text-sm font-medium text-gray-700">Enter your class</label>
-              <input
-                type="text"
+              <label htmlFor="class" className="block text-sm font-medium text-gray-700">Select Class</label>
+              <select
                 id="class"
                 value={userClass}
                 onChange={(e) => setUserClass(e.target.value)}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-color focus:border-primary-color sm:text-sm"
-              />
+              >
+                {classOptions}
+              </select>
             </div>
+
             <div>
               <button
                 type="submit"
@@ -164,7 +179,12 @@ export default function SignupForm() {
             </div>
           </form>
 
-          
+          <p className="text-center mt-4 text-gray-600 text-sm">
+            Already have an account?{" "}
+            <Link to="/login" className="text-primary-color font-medium hover:text-pink transition">
+              Login here
+            </Link>
+          </p>
         </div>
       </div>
 

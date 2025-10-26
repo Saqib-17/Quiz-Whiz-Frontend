@@ -137,7 +137,7 @@ const QuizWhiz = () => {
           className="text-white bg-gradient-to-r from-[#d36831] via-[#e47a4a] to-[#f08f5c] hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-[#c75c25] shadow-lg shadow-[#e47a4a]/50 dark:shadow-lg dark:shadow-[#d36831]/80 font-medium rounded-lg text-sm px-6 py-3 text-center mb-2"
           onClick={() => navigate("/")}
         >
-          Retake Quiz
+          Back to Home
         </button>
       </div>
     </div>
