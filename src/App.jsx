@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import { auth } from './firebase/firebase';
 import Header from './components/Header';
 import Home from './components/Home';
-import AboutUs from './components/AboutUs';
+import Features from './components/Features';
 import Footer from './components/Footer';
 import SignupForm from './components/SignupForm';
 import Group from './components/Group';
@@ -48,7 +48,7 @@ function App() {
       </Routes>
 
       
-      {location.pathname === '/' && <AboutUs />}
+      {location.pathname === '/' && <Features />}
       {location.pathname === '/' && <Footer />}
     </>
   );
