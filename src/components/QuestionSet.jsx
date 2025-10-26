@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom"; 
+import { useParams, useNavigate } from "react-router-dom";
 
 export default function QuestionSet() {
-  const { subject } = useParams(); 
-  const navigate = useNavigate(); 
+  const { subject } = useParams();
+  const navigate = useNavigate();
+
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,22 +20,35 @@ export default function QuestionSet() {
           return;
         }
 
-        const response = await fetch(`https://quiz-whiz-backend.vercel.app/api/questions/${subject}`);
+        // ✅ Auto switch between local and deployed backend
+        const baseURL =
+          window.location.origin === "http://localhost:5173"
+            ? "http://localhost:4000"
+            : "https://quiz-whiz-backend.vercel.app";
+
+        const response = await fetch(`${baseURL}/api/questions/${subject}`, {
+          headers: { "Content-Type": "application/json" },
+        });
+
         if (!response.ok) {
           throw new Error(`Failed to fetch questions: ${response.statusText}`);
         }
 
         const data = await response.json();
-        if (data.length === 0) {
+
+        if (!data || data.length === 0) {
           setError("No questions available for this subject.");
           return;
         }
 
         setQuestions(data);
       } catch (err) {
-        setError(err.message.includes("Failed to fetch")
-          ? "Unable to connect to the server. Please check your connection."
-          : "Something went wrong. Please try again.");
+        console.error("Error fetching questions:", err);
+        setError(
+          err.message.includes("Failed to fetch")
+            ? "Unable to connect to the server. Please check your connection."
+            : "Something went wrong. Please try again."
+        );
       } finally {
         setLoading(false);
       }
@@ -52,7 +66,9 @@ export default function QuestionSet() {
       return {
         question: question.title,
         isCorrect: selectedOption
-          ? question.options.find(opt => opt.text === selectedOption.value)?.isCorrect
+          ? question.options.find(
+              (opt) => opt.text === selectedOption.value
+            )?.isCorrect
           : false,
       };
     });
