@@ -14,7 +14,7 @@ export default function Home() {
           <div className="flex flex-col items-center lg:items-start lg:gap-16 space-y-4">
             <h1 className="font-medium lg:text-6xl text-3xl text-center">Get exam-ready,</h1>
             <h1 className="text-end font-medium lg:text-6xl text-3xl">stress-free.</h1>
-            <Link to="/login">
+            <Link to="/group">
               <button
                 className="relative bg-secondary-color px-2 mx-auto lg:px-16 shadow-[0_20px_50px_rgba(211,_104,_49,_0.7)] text-primary-color rounded-xl lg:text-3xl text-xl lg:py-8 py-4 font-normal hover:bg-pink hover:text-white transition-transform transform hover:scale-105 group"
               >

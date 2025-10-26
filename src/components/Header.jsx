@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import Profile from './Profile'; 
 
 export default function Header() {
   return (
@@ -6,7 +7,10 @@ export default function Header() {
       <nav>
         <div className="flex items-center justify-between">
           <div>
-            <Link to="/" className="text-primary-color lg:text-3xl font-medium hover:text-brown transition-colors duration-300">
+            <Link
+              to="/"
+              className="text-primary-color lg:text-3xl font-medium hover:text-brown transition-colors duration-300"
+            >
               QuizWhiz
             </Link>
           </div>
@@ -31,6 +35,17 @@ export default function Header() {
                   <a className="text-primary-color lg:text-lg hover:text-pink transition-colors duration-300">
                     Support
                   </a>
+                </button>
+              </li>
+              {/* ✅ Added Profile link */}
+              <li>
+                <button>
+                  <Link
+                    to="/profile"
+                    className="text-primary-color lg:text-lg hover:text-pink transition-colors duration-300"
+                  >
+                    Profile
+                  </Link>
                 </button>
               </li>
             </ul>
