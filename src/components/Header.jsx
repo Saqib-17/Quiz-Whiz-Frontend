@@ -19,10 +19,22 @@ export default function Header() {
     return () => unsubscribe();
   }, []);
 
+  // Function to handle smooth scroll for internal links
+  const handleScroll = (e, id) => {
+    e.preventDefault();
+    const section = document.getElementById(id);
+    if (section) {
+      const yOffset = -80; // adjust for sticky navbar height
+      const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  };
+
   return (
-    <header className="lg:px-40 px-2 py-2 bg-secondary-color shadow-md sticky top-0 z-10">
+    <header className="lg:px-40 px-2 py-2 bg-secondary-color shadow-md sticky top-0 z-50">
       <nav>
         <div className="flex items-center justify-between">
+          {/* Logo */}
           <div>
             <Link
               to="/"
@@ -32,14 +44,17 @@ export default function Header() {
             </Link>
           </div>
 
+          {/* Nav Links */}
           <div className="hidden lg:flex">
             <ul className="flex space-x-4">
               <li>
-                <button>
-                  <a className="text-primary-color lg:text-lg hover:text-pink transition-colors duration-300">
-                    Features
-                  </a>
-                </button>
+                <Link
+                  to="/"
+                  onClick={(e) => handleScroll(e, "features")}
+                  className="text-primary-color lg:text-lg hover:text-pink transition-colors duration-300 cursor-pointer"
+                >
+                  Features
+                </Link>
               </li>
               <li>
                 <button>
@@ -58,6 +73,7 @@ export default function Header() {
             </ul>
           </div>
 
+          {/* Auth Button */}
           <div>
             {!loggedIn ? (
               <button>
