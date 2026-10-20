@@ -1,5 +1,5 @@
 import { useState } from "react";
-import singupdp from '../assets/form-dp.svg';
+import singupdp from "../assets/form-dp.svg";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase/firebase.js";
 import { getFirebaseErrorMessage } from "../firebase/firebaseErrors.js";
@@ -8,9 +8,11 @@ import { Link, useNavigate } from "react-router-dom";
 const SuccessModal = ({ closeModal }) => (
   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
     <div className="bg-white p-6 rounded-lg w-80 shadow-lg">
-      <h2 className="text-xl font-semibold text-gray-800 text-center mb-4">Welcome to QuizWhiz!</h2>
+      <h2 className="text-xl font-semibold text-gray-800 text-center mb-4">
+        Welcome to QuizWhiz!
+      </h2>
       <p className="text-gray-600 text-center mb-6">
-         Your account has been created successfully.
+        Your account has been created successfully.
       </p>
       <div className="flex justify-center">
         <button
@@ -50,10 +52,14 @@ export default function SignupForm() {
 
     setLoading(true);
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
       const user = userCredential.user;
 
-      const response = await fetch("https://quiz-whiz-backend.vercel.app/api/users", {
+      const response = await fetch("http://localhost:4000/api/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -73,8 +79,9 @@ export default function SignupForm() {
       openModal();
     } catch (error) {
       console.error("Error during signup:", error);
-      const customMessage =
-        error.code ? getFirebaseErrorMessage(error.code) : "An unexpected error occurred. Please try again later.";
+      const customMessage = error.code
+        ? getFirebaseErrorMessage(error.code)
+        : "An unexpected error occurred. Please try again later.";
       setError(customMessage);
     } finally {
       setLoading(false);
@@ -92,7 +99,9 @@ export default function SignupForm() {
     <div className="bg-secondary-color flex items-center justify-center min-h-screen playwrite">
       <div className="rounded-lg shadow-lg flex flex-col md:flex-row p-4 sm:p-6 md:p-8 max-w-4xl w-full">
         <div className="md:w-1/2 flex flex-col items-center justify-center p-4 sm:p-6 text-center">
-          <h1 className="text-2xl sm:text-3xl font-bold text-primary-color mb-4">QuizWhiz</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-primary-color mb-4">
+            QuizWhiz
+          </h1>
           <div className="w-40 h-40 sm:w-48 sm:h-48 bg-blue-100 rounded-full flex items-center justify-center mb-6">
             <img src={singupdp} alt="QuizWhiz Logo" className="lg:w-full" />
           </div>
@@ -107,13 +116,16 @@ export default function SignupForm() {
           </p>
 
           {error && <p className="text-red-500 text-center">{error}</p>}
-          {loading && (
-            <div className="loader text-primary-color"></div>
-          )}
+          {loading && <div className="loader text-primary-color"></div>}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="full-name" className="block text-sm font-medium text-gray-700">Full Name</label>
+              <label
+                htmlFor="full-name"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Full Name
+              </label>
               <input
                 type="text"
                 id="full-name"
@@ -124,7 +136,12 @@ export default function SignupForm() {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email Address</label>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Email Address
+              </label>
               <input
                 type="email"
                 id="email"
@@ -135,7 +152,12 @@ export default function SignupForm() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Password
+              </label>
               <input
                 type="password"
                 id="password"
@@ -146,7 +168,12 @@ export default function SignupForm() {
             </div>
 
             <div>
-              <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700">Confirm Password</label>
+              <label
+                htmlFor="confirm-password"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Confirm Password
+              </label>
               <input
                 type="password"
                 id="confirm-password"
@@ -157,7 +184,12 @@ export default function SignupForm() {
             </div>
 
             <div>
-              <label htmlFor="class" className="block text-sm font-medium text-gray-700">Select Class</label>
+              <label
+                htmlFor="class"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Select Class
+              </label>
               <select
                 id="class"
                 value={userClass}
@@ -181,7 +213,10 @@ export default function SignupForm() {
 
           <p className="text-center mt-4 text-gray-600 text-sm">
             Already have an account?{" "}
-            <Link to="/login" className="text-primary-color font-medium hover:text-pink transition">
+            <Link
+              to="/login"
+              className="text-primary-color font-medium hover:text-pink transition"
+            >
               Login here
             </Link>
           </p>

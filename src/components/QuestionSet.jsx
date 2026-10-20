@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { auth } from "../firebase/firebase";
 
 export default function QuestionSet() {
   const { subject } = useParams();
@@ -10,6 +11,8 @@ export default function QuestionSet() {
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [submitError, setSubmitError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const selectedSet = questionSets.find((set) => set._id === selectedSetId);
   const questions = selectedSet?.questions ?? [];
@@ -30,10 +33,7 @@ export default function QuestionSet() {
         return;
       }
 
-      const baseURL =
-        window.location.origin === "http://localhost:5173"
-          ? "http://localhost:4000"
-          : "https://quiz-whiz-backend.vercel.app";
+      const baseURL = "http://localhost:4000";
 
       try {
         const response = await fetch(
@@ -41,7 +41,7 @@ export default function QuestionSet() {
           {
             headers: { "Content-Type": "application/json" },
             signal: controller.signal,
-          }
+          },
         );
 
         if (!response.ok) {
@@ -63,7 +63,7 @@ export default function QuestionSet() {
           setError(
             err.message.includes("Failed to fetch")
               ? "Unable to connect to the server. Please check your connection."
-              : "Something went wrong. Please try again."
+              : "Something went wrong. Please try again.",
           );
         }
       } finally {
@@ -78,22 +78,60 @@ export default function QuestionSet() {
     return () => controller.abort();
   }, [subject]);
 
-  const handleSubmit = () => {
-    if (!selectedSet) return;
+  const handleSubmit = async () => {
+    if (!selectedSet || submitting) return;
+
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+      setSubmitError("Please log in again before submitting your quiz.");
+      return;
+    }
 
     const answers = questions.map((question, index) => {
       const selectedText = selectedAnswers[index];
       const selectedOption = question.options.find(
-        (option) => option.text === selectedText
+        (option) => option.text === selectedText,
       );
+      const correctOption = question.options.find((option) => option.isCorrect);
 
       return {
+        questionNumber: index + 1,
         question: question.title,
+        selectedAnswer: selectedOption?.text ?? "Not answered",
+        correctAnswer: correctOption?.text ?? "Correct answer unavailable",
         isCorrect: selectedOption?.isCorrect ?? false,
       };
     });
 
-    navigate("/dashboard", { state: { answers } });
+    setSubmitting(true);
+    setSubmitError("");
+
+    try {
+      const response = await fetch(
+        `http://localhost:4000/api/users/${encodeURIComponent(currentUser.uid)}/attempts`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            answers,
+            subject,
+            setName: selectedSet.setName,
+          }),
+        },
+      );
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Could not save your quiz result.");
+      }
+
+      navigate("/dashboard", { state: { answers } });
+    } catch (err) {
+      console.error("Error submitting quiz:", err);
+      setSubmitError(err.message || "Could not save your quiz result.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (loading) {
@@ -111,7 +149,6 @@ export default function QuestionSet() {
   return (
     <div className="bg-yellow-50 min-h-screen flex flex-col playwrite">
       <header className="border-b py-4 px-6 flex items-center justify-between gap-4">
-
         <div className="flex items-center gap-2 mx-auto">
           <select
             id="question-set"
@@ -171,14 +208,20 @@ export default function QuestionSet() {
           ))}
         </section>
 
+        {submitError && (
+          <p className="text-center text-red-700" role="alert">
+            {submitError}
+          </p>
+        )}
+
         <div className="col-span-1 sm:col-span-2 flex justify-center my-4">
           <button
             type="button"
             className="text-white bg-gradient-to-r from-[#d36831] via-[#e47a4a] to-[#f08f5c] font-medium rounded-lg text-sm px-6 py-3 disabled:opacity-50"
             onClick={handleSubmit}
-            disabled={!selectedSet}
+            disabled={!selectedSet || submitting}
           >
-            Submit
+            {submitting ? "Saving..." : "Submit"}
           </button>
         </div>
       </main>

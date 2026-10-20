@@ -1,52 +1,64 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import SidebarHeader from './SidebarHeader';
-import Feedbacksvg from '../assets/Feedback.svg';
+import SidebarHeader from "./SidebarHeader";
+import Feedbacksvg from "../assets/Feedback.svg";
+import { auth } from "../firebase/firebase";
 
 const QuizWhiz = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [correctAnswers, setCorrectAnswers] = useState(0);
-  const [wrongAnswers, setWrongAnswers] = useState(0);
-  const [attempts, setAttempts] = useState(0);
-  const [incorrectQuestions, setIncorrectQuestions] = useState([]);
-
-  const userId = "example-user-id";
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [leaderboardLoading, setLeaderboardLoading] = useState(true);
+  const [leaderboardError, setLeaderboardError] = useState("");
+  const [showAnalysis, setShowAnalysis] = useState(false);
+  const answers = location.state?.answers ?? [];
+  const incorrectAnswers = answers.filter((answer) => !answer.isCorrect);
+  const correctAnswers = answers.length - incorrectAnswers.length;
+  const wrongAnswers = incorrectAnswers.length;
+  const currentUserUid = auth.currentUser?.uid;
 
   useEffect(() => {
-    if (location.state && location.state.answers) {
-      const { answers } = location.state;
+    const controller = new AbortController();
 
-      const correct = answers.filter(answer => answer.isCorrect).length;
-      const wrong = answers.length - correct;
-
-      setCorrectAnswers(correct);
-      setWrongAnswers(wrong);
-
-      // Extract incorrect question numbers
-      const incorrect = answers
-        .map((answer, index) => (!answer.isCorrect ? index + 1 : null))
-        .filter(q => q !== null);
-
-      setIncorrectQuestions(incorrect);
-    }
-
-    const fetchAttempts = async () => {
+    const fetchLeaderboard = async () => {
       try {
-        const response = await fetch(`http://localhost:4000/api/getAttempts/${userId}`);
-        const data = await response.json();
-        setAttempts(data.attempts || 0);
+        const response = await fetch("http://localhost:4000/api/users/leaderboard", {
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error("Unable to load the leaderboard.");
+        }
+
+        const users = await response.json();
+        if (!Array.isArray(users)) {
+          throw new Error("The leaderboard response was invalid.");
+        }
+
+        setLeaderboard(users);
       } catch (error) {
-        console.error("Error fetching attempts:", error);
+        if (error.name !== "AbortError") {
+          console.error("Error fetching leaderboard:", error);
+          setLeaderboardError(error.message);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setLeaderboardLoading(false);
+        }
       }
     };
 
-    fetchAttempts();
-  }, [location.state]);
+    fetchLeaderboard();
+
+    return () => controller.abort();
+  }, []);
 
   const getFeedback = () => {
-    const totalAnswers = correctAnswers + wrongAnswers;
-    const percentage = (correctAnswers / totalAnswers) * 100;
+    if (answers.length === 0) {
+      return "Complete a quiz to get personalized feedback.";
+    }
+
+    const percentage = (correctAnswers / answers.length) * 100;
 
     if (percentage <= 30) {
       return "Don't lose hope! Start with the basics and keep practicing—progress takes time.";
@@ -88,13 +100,36 @@ const QuizWhiz = () => {
               </div>
               <div className="bg-[#d4e5dc] rounded-lg shadow-md p-6">
                 <h2 className="text-lg font-bold text-center">Leaderboard</h2>
-                <ul className="mt-4 space-y-2">
-                  <li>1. Faisal Ahmed</li>
-                  <li>2. Shahidul Sakib</li>
-                  <li>3. Lazima Mishfa</li>
-                  <li>4. Mr. Batman</li>
-                  <li className="font-bold text-maroon">• You are on 10th</li>
-                </ul>
+                {leaderboardLoading ? (
+                  <p className="mt-4 text-center">Loading leaderboard...</p>
+                ) : leaderboardError ? (
+                  <p className="mt-4 text-center text-red-700" role="alert">
+                    {leaderboardError}
+                  </p>
+                ) : leaderboard.length === 0 ? (
+                  <p className="mt-4 text-center">No quiz scores yet.</p>
+                ) : (
+                  <ol className="mt-4 max-h-64 space-y-2 overflow-y-auto">
+                    {leaderboard.map((leader, index) => (
+                      <li
+                        key={leader.uid}
+                        className={`flex items-center justify-between gap-3 rounded-md px-3 py-2 ${
+                          leader.uid === currentUserUid
+                            ? "bg-[#f6d7a7] font-bold"
+                            : "bg-white/60"
+                        }`}
+                      >
+                        <span className="min-w-0 truncate">
+                          {index + 1}. {leader.fullName}
+                          {leader.uid === currentUserUid ? " (You)" : ""}
+                        </span>
+                        <span className="shrink-0 text-sm">
+                          {leader.totalCorrectAnswers ?? 0} pts
+                        </span>
+                      </li>
+                    ))}
+                  </ol>
+                )}
               </div>
             </div>
 
@@ -109,16 +144,50 @@ const QuizWhiz = () => {
               {/* Merged Card */}
               <div className="col-span-2 bg-[#d4e5dc] rounded-lg shadow-md p-6 text-center order-2">
                 <h2 className="text-lg font-bold">Question Analysis</h2>
-                <p className="mt-4">You answered the following questions incorrectly:</p>
-                <ul className="list-disc list-inside mt-4 text-left">
-                  {incorrectQuestions.length > 0 ? (
-                    incorrectQuestions.map((q, index) => (
-                      <li key={index}>Question {q}</li>
-                    ))
-                  ) : (
-                    <li>No incorrect questions! Great job!</li>
-                  )}
-                </ul>
+                {answers.length === 0 ? (
+                  <p className="mt-4">Submit a quiz to see your question analysis.</p>
+                ) : wrongAnswers === 0 ? (
+                  <p className="mt-4">No incorrect answers. Great job!</p>
+                ) : (
+                  <>
+                    <p className="mt-4">
+                      You got {wrongAnswers} of {answers.length} questions wrong.
+                    </p>
+                    <button
+                      type="button"
+                      aria-expanded={showAnalysis}
+                      aria-controls="incorrect-answer-review"
+                      onClick={() => setShowAnalysis((visible) => !visible)}
+                      className="mt-4 rounded-lg bg-[#d36831] px-5 py-2 font-semibold text-white hover:bg-[#b55424]"
+                    >
+                      {showAnalysis ? "Hide wrong answers" : "Show wrong answers"}
+                    </button>
+                    {showAnalysis && (
+                      <ol
+                        id="incorrect-answer-review"
+                        className="mt-5 space-y-4 text-left"
+                      >
+                        {incorrectAnswers.map((answer, index) => (
+                          <li
+                            key={`${answer.questionNumber ?? index}-${answer.question}`}
+                            className="rounded-lg bg-white/70 p-4"
+                          >
+                            <h3 className="font-bold">
+                              Question {answer.questionNumber ?? index + 1}
+                            </h3>
+                            <p className="mt-1">{answer.question}</p>
+                            <p className="mt-2 text-red-800">
+                              Your answer: {answer.selectedAnswer ?? "Not answered"}
+                            </p>
+                            <p className="font-semibold text-green-800">
+                              Correct answer: {answer.correctAnswer ?? "Unavailable"}
+                            </p>
+                          </li>
+                        ))}
+                      </ol>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           </div>

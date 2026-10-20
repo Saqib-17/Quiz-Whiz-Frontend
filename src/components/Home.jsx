@@ -14,15 +14,14 @@ export default function Home() {
           <div className="flex flex-col items-center lg:items-start lg:gap-16 space-y-4">
             <h1 className="font-medium lg:text-6xl text-3xl text-center">Get exam-ready,</h1>
             <h1 className="text-end font-medium lg:text-6xl text-3xl">stress-free.</h1>
-            <Link to="/group">
-              <button
-                className="relative bg-secondary-color px-2 mx-auto lg:px-16 shadow-[0_20px_50px_rgba(211,_104,_49,_0.7)] text-primary-color rounded-xl lg:text-3xl text-xl lg:py-8 py-4 font-normal hover:bg-pink hover:text-white transition-transform transform hover:scale-105 group"
-              >
-                <div
-                  className="absolute -inset-1 bg-gradient-to-r from-[#d36831] via-[#ff4d6d] to-[#9d4edd] rounded-xl blur-lg opacity-30 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"
-                ></div>
-                <span className="relative">Start Quiz</span>
-              </button>
+            <Link
+              to="/group"
+              className="relative mx-auto rounded-xl bg-secondary-color px-2 py-4 text-xl font-normal text-primary-color shadow-[0_20px_50px_rgba(211,_104,_49,_0.7)] transition-transform hover:scale-105 hover:bg-pink hover:text-white lg:px-16 lg:py-8 lg:text-3xl group"
+            >
+              <div
+                className="absolute -inset-1 rounded-xl bg-gradient-to-r from-[#d36831] via-[#ff4d6d] to-[#9d4edd] opacity-30 blur-lg transition duration-1000 group-hover:opacity-100 group-hover:duration-200"
+              ></div>
+              <span className="relative">Start Quiz</span>
             </Link>
             <p>Practice tests designed to boost your confidence and sharpen your skills.</p>
           </div>
