@@ -65,7 +65,7 @@ npm start
 
 ## Deployment
 
-The frontend can be deployed on platforms like Vercel, Netlify, or any static hosting supporting React apps.
+The frontend can be deployed on platforms like Vercel, Netlify, or any static hosting supporting React apps. API requests use `https://quiz-whiz-backend.vercel.app` by default. Set `VITE_API_BASE_URL` in the deployment environment to use a different backend URL.
 
 ---
 

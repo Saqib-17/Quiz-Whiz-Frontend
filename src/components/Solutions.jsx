@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import SidebarHeader from "./SidebarHeader";
 import { auth } from "../firebase/firebase";
+import { apiUrl } from "../api";
 
 export default function Solutions() {
   const [attempts, setAttempts] = useState([]);
@@ -20,7 +21,7 @@ export default function Solutions() {
 
       try {
         const response = await fetch(
-          `http://localhost:4000/api/users/${encodeURIComponent(currentUser.uid)}`,
+          apiUrl(`api/users/${encodeURIComponent(currentUser.uid)}`),
           { signal: controller.signal },
         );
 

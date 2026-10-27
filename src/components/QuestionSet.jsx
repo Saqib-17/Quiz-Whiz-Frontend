@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { auth } from "../firebase/firebase";
+import { apiUrl } from "../api";
 
 export default function QuestionSet() {
   const { subject } = useParams();
@@ -33,11 +34,9 @@ export default function QuestionSet() {
         return;
       }
 
-      const baseURL = "http://localhost:4000";
-
       try {
         const response = await fetch(
-          `${baseURL}/api/questions/${encodeURIComponent(subject)}`,
+          apiUrl(`api/questions/${encodeURIComponent(subject)}`),
           {
             headers: { "Content-Type": "application/json" },
             signal: controller.signal,
@@ -108,7 +107,7 @@ export default function QuestionSet() {
 
     try {
       const response = await fetch(
-        `http://localhost:4000/api/users/${encodeURIComponent(currentUser.uid)}/attempts`,
+        apiUrl(`api/users/${encodeURIComponent(currentUser.uid)}/attempts`),
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

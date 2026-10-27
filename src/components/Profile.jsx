@@ -3,6 +3,7 @@ import { auth } from "../firebase/firebase";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import profileImage from "../assets/form-dp.png"; // same image as RN version
+import { apiUrl } from "../api";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -25,7 +26,7 @@ export default function Profile() {
         }
 
         const res = await fetch(
-          `http://localhost:4000/api/users/${encodeURIComponent(currentUser.uid)}`,
+          apiUrl(`api/users/${encodeURIComponent(currentUser.uid)}`),
         );
 
         if (!res.ok) {
@@ -57,7 +58,7 @@ export default function Profile() {
     setLeaderboardError("");
     try {
       const response = await fetch(
-        "http://localhost:4000/api/users/leaderboard",
+        apiUrl("api/users/leaderboard"),
       );
       if (!response.ok) {
         throw new Error("Could not load the leaderboard.");

@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import SidebarHeader from "./SidebarHeader";
 import Feedbacksvg from "../assets/Feedback.svg";
 import { auth } from "../firebase/firebase";
+import { apiUrl } from "../api";
 
 const QuizWhiz = () => {
   const location = useLocation();
@@ -22,7 +23,7 @@ const QuizWhiz = () => {
 
     const fetchLeaderboard = async () => {
       try {
-        const response = await fetch("http://localhost:4000/api/users/leaderboard", {
+        const response = await fetch(apiUrl("api/users/leaderboard"), {
           signal: controller.signal,
         });
 

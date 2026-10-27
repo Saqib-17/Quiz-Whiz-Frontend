@@ -4,6 +4,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase/firebase.js";
 import { getFirebaseErrorMessage } from "../firebase/firebaseErrors.js";
 import { Link, useNavigate } from "react-router-dom";
+import { apiUrl } from "../api";
 
 const SuccessModal = ({ closeModal }) => (
   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -59,7 +60,7 @@ export default function SignupForm() {
       );
       const user = userCredential.user;
 
-      const response = await fetch("http://localhost:4000/api/users", {
+      const response = await fetch(apiUrl("api/users"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
